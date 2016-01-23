@@ -1,0 +1,16 @@
+{
+  "name": "node_ble",
+  "version": "1.0.0",
+  "description": "",
+  "main": "hackacommand.js",
+  "dependencies": {
+    "async": "^1.5.2",
+    "json-stringify": "^1.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
