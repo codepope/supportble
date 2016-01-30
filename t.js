@@ -25,7 +25,7 @@ noble.on('scanStop', function() {
 noble.on('discover', function(peripheral) {
   console.log('on -> discover: ' + peripheral);
 
-  noble.stopScanning();
+  //noble.stopScanning();
 
   peripheral.on('connect', function() {
     console.log('on -> connect');
