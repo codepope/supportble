@@ -62,16 +62,26 @@ function digBand(wfitnum,peripheral) {
       });
 
       bands[wfitnum].services=services;
-      console.log(bands[wfitnum].rx);
+      //console.log(bands[wfitnum].rx);
+      //console.log(bands[wfitnum].tx);
+
+
       b=crcBuffer([0x41,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00]);
       bands[wfitnum].tx.write(b,true,(error) => {
         console.log(error);
-        bands[wfitnum].rx.read((error,data) => {
-          console.log(error)
-          console.log(data)
+        bands[wfitnum].rx.notify(true,(error) => {
+          console.log("Reading");
+          bands[wfitnum].tx.read((error,d) => {
+            if(error) {
+              console.log("Error:"+error)
+              return;
+            }
+            console.log("Read:")
+            console.log(d)
+          });
         });
       })
-      console.log(b);
+      //console.log(b);
     });
   });
 };
