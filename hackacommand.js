@@ -35,6 +35,13 @@ function crcBuffer(bytes) {
     return Buffer(bytes)
 }
 
+function bcdecode(byte) {
+    n=0;
+    n += (byte & 0x0F);
+    n += ((byte>>4) & 0x0F) * 10;
+    return n;
+}
+
 rxuuid="fff7"
 txuuid="fff6"
 
@@ -61,26 +68,40 @@ function digBand(wfitnum,peripheral) {
         }
       });
 
-      bands[wfitnum].services=services;
-      //console.log(bands[wfitnum].rx);
-      //console.log(bands[wfitnum].tx);
+      band=bands[wfitnum];
 
+      band.rx.on('data', (data, isNotification) => {
+        if(data[0]==0x41) {
+          console.log("Got time")
+          year=2000+bcdecode(data[1]);
+          month=bcdecode(data[2]);
+          day=bcdecode(data[3]);
+          hour=bcdecode(data[4]);
+          minute=bcdecode(data[5]);
+          second=bcdecode(data[6]);
+          console.log(day+"/"+month+"/"+year+" "+hour+":"+minute+":"+second)
+        }
+        else {
+          console.log("Got "+data)
+        }
+      });
 
-      b=crcBuffer([0x41,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00]);
-      bands[wfitnum].tx.write(b,true,(error) => {
-        console.log(error);
-        bands[wfitnum].rx.notify(true,(error) => {
-          console.log("Reading");
-          bands[wfitnum].tx.read((error,d) => {
-            if(error) {
-              console.log("Error:"+error)
-              return;
-            }
-            console.log("Read:")
-            console.log(d)
-          });
-        });
+      band.rx.notify(true,(error) => {
+         if(error) {
+           console.log("Notify error:"+error);
+         }
+         b=crcBuffer([0x41,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00]);
+         console.log(b)
+         band.tx.write(b,true,(error) => {
+           if(error) {
+             console.log("Write error:"+error);
+           }
+         });
       })
+
+
+
+
       //console.log(b);
     });
   });
